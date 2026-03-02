@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Görev 2: Devre Kurulumu</title>
+<style>
+body{
+    margin:0;
+    font-family:"Segoe UI",sans-serif;
+    background:#f4f7fb;
+}
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+}
+
+/* Sol içerik */
+.main-content{
+    flex:3;
+}
+
+/* Sağ ipucu alanı */
+.hint-box{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    position:sticky;
+    top:20px;
+}
+
+/* İpucu ve arkadaşına sor butonları */
+.extra-item{
+    background:white;
+    border-radius:16px;
+    padding:15px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    text-align:center;
+    cursor:pointer;
+    transition: transform 0.2s;
+}
+.extra-item:hover{
+    transform: scale(1.05);
+}
+.extra-item img{
+    width:80px;
+    height:80px;
+    object-fit:cover;
+    border-radius:50%;
+}
+.extra-item p{
+    margin-top:10px;
+    font-weight:bold;
+}
+
+/* Hint ve soru kutuları */
+.hint-text, .friend-question, .friend-comments{
+    display:none;
+    background:white;
+    border-radius:12px;
+    padding:10px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+    margin-top:10px;
+}
+.friend-question textarea{
+    width:100%;
+    border-radius:10px;
+    border:1px solid #ccc;
+    padding:8px;
+    font-size:14px;
+    resize:none;
+}
+.friend-question button{
+    margin-top:5px;
+    padding:8px 12px;
+    border:none;
+    border-radius:10px;
+    background:#1976d2;
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+}
+.friend-comments p{
+    background:#e0f7fa;
+    padding:6px 10px;
+    border-radius:10px;
+    margin-bottom:5px;
+}
+
+/* Senaryo kutusu */
+.scenario-box{
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    margin-bottom:30px;
+    box-shadow:0 6px 16px rgba(0,0,0,0.1);
+    text-align:center;
+}
+.scenario-box img{
+    width:480px; /* 3:2 oran */
+    height:320px;
+    object-fit:cover;
+    border-radius:15px;
+    margin-bottom:15px;
+}
+.scenario-text{
+    font-size:16px;
+    margin-top:10px;
+}
+
+/* Görev Kartı */
+.task-card{
+    background:white;
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    text-align:center;
+    margin-bottom:30px;
+}
+.task-card input[type="file"], .task-card input[type="url"]{
+    margin-top:10px;
+    width:90%;
+    padding:6px 8px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+.task-card button{
+    margin-top:10px;
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
+    background:#1976d2;
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+    transition: transform 0.2s;
+}
+.task-card button:hover{
+    transform: scale(1.05);
+}
+
+/* Kutlama mesajı */
+.completed-message{
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    color:green;
+    margin-top:20px;
+    display:none;
+}
+.completed-message img{
+    width:120px;
+    height:120px;
+    margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<!-- Sol içerik -->
+<div class="main-content">
+<h1>🔌 Görev 1: Devre Kurulumu</h1>
+
+<div class="scenario-box">
+    <img src="trafik_devre.jpg" alt="Devre Malzemeleri">
+    <div class="scenario-text">
+        Masadaki Arduino, LED, direnç ve butonları kullanarak trafik ışığı devresini kur. <br>
+        Devreni fotoğrafla veya Tinkercad linkini gir! <br>
+        Herhangi birini yaptığında görev tamamlanacak.
+    </div>
+</div>
+
+<div class="task-card">
+    <h3>Devreyi Kur ve Gönder</h3>
+    <p>Dosya veya link yükle. Eğer devrede sorun fark edersen, tekrar yükleyip düzeltebilirsin!</p>
+    <input type="file" id="devreUpload" accept="image/*,.zip,.ino"><br>
+    <input type="url" id="tinkercadLink" placeholder="Tinkercad linkini buraya yapıştır"><br>
+    <button onclick="completeTask()">Görevi Tamamla</button>
+
+    <div class="completed-message" id="completedMessage">
+        🎉 Devreyi başarıyla yükledin!<br>
+        <strong>Hadi şimdi kodunu yazmaya geçelim!</strong><br>
+        <img src="kutlama.jpg" alt="Tebrikler!"><br>
+        <small style="color:#555;">⚠️ Eğer devrede bir sorun görürsen, tekrar yükleyebilirsin!</small><br>
+        <div style="margin-top:15px;">
+            <button onclick="goHome()" style="margin-right:10px;">🏠 Ana Sayfaya Dön</button>
+            <button onclick="goGorev3()">➡ Görev 3’e Başla</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Sağ ipucu alanı -->
+<div class="hint-box">
+    <div class="extra-item" onclick="showHint()">
+        <img src="joker_ipucu.jpg" alt="İpucu">
+        <p>İpucu Al</p>
+        <div class="hint-text" id="hintText">
+            Malzemeler: Arduino kart, kırmızı LED, sarı LED, yeşil LED, dirençler, buton.
+        </div>
+    </div>
+
+    <div class="extra-item" onclick="toggleFriendQuestion()">
+        <img src="joker_arkadas.jpg" alt="Arkadaşına Sor">
+        <p>Arkadaşına Sor</p>
+        <div class="friend-question" id="friendQuestion">
+            <textarea id="questionInput" rows="3" placeholder="Arkadaşına sorunu buraya yaz..."></textarea><br>
+            <button onclick="submitQuestion()">Gönder</button>
+            <div class="friend-comments" id="friendComments"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Görev Tamamlandı
+function completeTask(){
+    const file = document.getElementById('devreUpload').files[0];
+    const link = document.getElementById('tinkercadLink').value.trim();
+    if(!file && link===''){
+        alert("Lütfen devre fotoğrafını yükleyin veya Tinkercad linkini girin!");
+        return;
+    }
+    document.getElementById('completedMessage').style.display='block';
+}
+
+// Ana Sayfaya Dön
+function goHome(){
+    window.location.href='index.html';
+}
+
+// Görev 3’e Başla
+function goGorev3(){
+    window.location.href='gorev3.html';
+}
+
+// İpucu Göster
+function showHint(){
+    const hint = document.getElementById('hintText');
+    hint.style.display = (hint.style.display==='block') ? 'none' : 'block';
+}
+
+// Arkadaşına Sor alanı
+function toggleFriendQuestion(){
+    const area = document.getElementById('friendQuestion');
+    area.style.display = (area.style.display==='block') ? 'none' : 'block';
+}
+
+// Arkadaş sorusu gönder
+function submitQuestion(){
+    const input = document.getElementById('questionInput');
+    if(input.value.trim()==='') return;
+    const commentBox = document.getElementById('friendComments');
+    const newComment = document.createElement('p');
+    newComment.textContent = input.value;
+    commentBox.appendChild(newComment);
+    commentBox.style.display='block';
+    input.value='';
+}
+</script>
+
+</div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Trafik Lambası Görevi</title>
+
+<style>
+body{
+    margin:0;
+    font-family: "Segoe UI", sans-serif;
+    background:#f4f7fb;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+    color:#d32f2f;
+}
+
+/* SENARYO */
+.scenario-box{
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    margin-bottom:30px;
+    box-shadow:0 6px 16px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+.scenario-image{
+    position:relative;
+    max-width:720px;
+    margin:auto;
+}
+
+.scenario-image img{
+    width:100%;
+    border-radius:15px;
+}
+
+.play-button{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    background:rgba(0,0,0,0.6);
+    color:white;
+    font-size:36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.scenario-text{
+    margin-top:15px;
+    font-size:16px;
+}
+
+/* GÖREVLER */
+.tasks{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+}
+
+.task-card{
+    background:white;
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    position:relative;
+}
+
+.task-card.locked{
+    opacity:0.5;
+}
+
+.lock-icon{
+    position:absolute;
+    top:10px;
+    right:15px;
+    font-size:22px;
+}
+
+.task-card h3{
+    margin-top:0;
+    color:#2e7d32;
+}
+
+.task-card button{
+    margin-top:10px;
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
+    background:#1976d2;
+    color:white;
+    cursor:pointer;
+}
+
+/* GÖREV ALT GÖRSEL ALANI */
+.task-extras{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    margin-top:20px;
+}
+
+.extra-item{
+    text-align:center;
+    cursor:pointer;
+}
+
+.extra-item img{
+    width:90px;
+    height:90px;
+    object-fit:cover;
+    border-radius:50%;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+}
+
+.extra-item p{
+    margin-top:8px;
+    font-size:14px;
+    font-weight:600;
+}
+
+/* Video Modal */
+#videoModal{
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.8);
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+}
+
+#videoModal video{
+    width:80%;
+    max-width:720px;
+    border-radius:12px;
+}
+
+#videoModal button{
+    position:absolute;
+    top:20px;
+    right:20px;
+    background:red;
+    color:white;
+    border:none;
+    border-radius:50%;
+    width:30px;
+    height:30px;
+    font-weight:bold;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🚦 Trafik Lambası Görevi</h1>
+
+<!-- SENARYO -->
+<div class="scenario-box">
+    <div class="scenario-image">
+        <img src="trafik_senaryo.jpg" alt="Trafik Senaryosu">
+        <div class="play-button" onclick="openVideo()">▶</div>
+    </div>
+
+    <div class="scenario-text">
+        <strong>“Mahallemizdeki kavşakta trafik lambası bozuldu!”</strong><br>
+        Belediye senden yardım istiyor. Trafik lambasını doğru sırayla çalıştır!
+    </div>
+</div>
+
+<!-- Video Modal -->
+<div id="videoModal">
+    <video id="scenarioVideo" controls>
+        <source src="Trafik_Lambası_Onarım_Oyunu.mp4" type="video/mp4">
+        Tarayıcınız video etiketini desteklemiyor.
+    </video>
+    <button onclick="closeVideo()">✖</button>
+</div>
+
+<!-- GÖREV KARTLARI -->
+<div class="tasks">
+
+<!-- GÖREV 1 -->
+<div class="task-card">
+    <h3>🔓 Görev 1: Devre Kurulumu</h3>
+  
+<p>
+        Masadaki Arduino, LED, direnç ve butonları kullanarak trafik ışığı devresini kur.
+    </p>
+    <ul>
+        <li>Yeşil, sarı ve kırmızı LED'leri doğru yerlere bağla</li>
+        <li>Dirençleri LED'lere bağla</li>
+        <li>Buton ile sistemi kontrol etmeyi unutma</li>
+    </ul>
+
+<button onclick="window.location.href='gorev1.html'">Göreve Başla</button>
+
+    <div class="task-extras">
+        <div class="extra-item">
+            <img src="puan_rozet.jpg">
+            <p>Puan Tablosu</p>
+        </div>
+        <div class="extra-item">
+            <img src="joker_ipucu.jpg">
+            <p>İpucu Al</p>
+        </div>
+        <div class="extra-item">
+            <img src="joker_arkadas.jpg">
+            <p>Arkadaşına Sor</p>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- GÖREV 2 -->
+<div class="task-card locked">
+    <div class="lock-icon">🔒</div>
+    <h3>Görev 2: Kodlama ve Test</h3>
+    <p>
+        Kurduğun devreye uygun mBlock kodunu yaz. Kodda trafik ışığı sırayla çalışmalı:
+    </p>
+    <ul>
+        <li>Yeşil LED 5 saniye</li>
+        <li>Sarı LED 2 saniye</li>
+        <li>Kırmızı LED 5 saniye</li>
+        <li>Butona basıldığında tüm LED’ler sönmeli ve beklemeli</li>
+        <li>Butona tekrar basıldığında sistem baştan başlamalı</li>
+    </ul>
+
+    <button>Göreve Başla</button>
+
+    <div class="task-extras">
+        <div class="extra-item">
+            <img src="puan_rozet.jpg">
+            <p>Puan Tablosu</p>
+        </div>
+        <div class="extra-item">
+            <img src="joker_ipucu.jpg">
+            <p>İpucu Al</p>
+        </div>
+        <div class="extra-item">
+            <img src="joker_arkadas.jpg">
+            <p>Arkadaşına Sor</p>
+        </div>
+    </div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+function openVideo(){
+    const modal = document.getElementById('videoModal');
+    const vid = document.getElementById('scenarioVideo');
+    modal.style.display='flex';
+    vid.play();
+}
+function closeVideo(){
+    const modal = document.getElementById('videoModal');
+    const vid = document.getElementById('scenarioVideo');
+    vid.pause();
+    vid.currentTime=0;
+    modal.style.display='none';
+}
+</script>
+
+</body>
+</html>
+
