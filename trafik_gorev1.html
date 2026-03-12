@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Görev 1: Devre Kurulumu</title>
+<style>
+*{box-sizing:border-box;}
+body{
+    margin:0;
+    font-family:"Segoe UI",sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+}
+
+/* ÜST OYUN BAR */
+.game-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 35px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.left-bar{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
+
+.progress{
+    width:230px;
+    height:10px;
+    background:rgba(255,255,255,0.2);
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:100%;
+    width:40%;
+    background:linear-gradient(90deg,#00ffcc,#00c3ff);
+    border-radius:20px;
+    box-shadow:0 0 15px #00c3ff;
+}
+
+/* JOKERLER */
+.jokers{
+    display:flex;
+    gap:15px;
+}
+
+.joker{
+    position:relative;
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    background:linear-gradient(145deg,#00c3ff,#00ffcc);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    cursor:pointer;
+    box-shadow:0 0 15px rgba(0,195,255,0.7);
+    transition:0.3s;
+}
+
+.joker:hover{
+    transform:scale(1.15);
+    box-shadow:0 0 25px #00ffcc;
+}
+
+.joker-count{
+    position:absolute;
+    bottom:-5px;
+    right:-5px;
+    background:red;
+    color:white;
+    font-size:12px;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    border:2px solid white;
+}
+
+/* TOOLTIP */
+.tooltip{
+    position:absolute;
+    top:70px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(10px);
+    color:white;
+    padding:8px 12px;
+    border-radius:12px;
+    font-size:13px;
+    text-align:center;
+    white-space:nowrap;
+    opacity:0;
+    transition:0.3s;
+    pointer-events:none;
+    box-shadow:0 0 8px rgba(0,0,0,0.4);
+    z-index:99;
+}
+
+.tooltip::after{
+    content:"";
+    position:absolute;
+    top:-6px;
+    left:50%;
+    transform:translateX(-50%);
+    border-width:6px;
+    border-style:solid;
+    border-color:transparent transparent rgba(255,255,255,0.15) transparent;
+}
+
+.joker:hover .tooltip{
+    opacity:1;
+}
+
+/* ANA CONTAINER */
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:50px 20px;
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+}
+
+/* Sol içerik */
+.main-content{
+    flex:3;
+}
+
+/* Senaryo kutusu */
+.scenario-box{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(15px);
+    border-radius:25px;
+    padding:30px;
+    margin-bottom:30px;
+    text-align:center;
+    box-shadow:0 10px 40px rgba(0,0,0,0.4);
+    border:1px solid rgba(255,255,255,0.1);
+    transition:0.4s;
+}
+.scenario-box:hover{
+    transform:translateY(-6px);
+}
+.scenario-box img{
+    width:480px;
+    height:320px;
+    object-fit:cover;
+    border-radius:15px;
+    margin-bottom:15px;
+}
+.scenario-text{
+    font-size:16px;
+    margin-top:10px;
+}
+
+/* Görev Kartı */
+.task-card{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(15px);
+    border-radius:25px;
+    padding:25px;
+    margin-bottom:30px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.4);
+    border:1px solid rgba(255,255,255,0.1);
+    transition:0.3s;
+}
+.task-card:hover{
+    transform:translateY(-6px);
+}
+.task-card input[type="file"], .task-card input[type="url"]{
+    margin-top:10px;
+    width:90%;
+    padding:8px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.3);
+    background:rgba(255,255,255,0.1);
+    color:white;
+}
+.task-card button{
+    margin-top:15px;
+    padding:12px 20px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(90deg,#00ffcc,#00c3ff);
+    color:#003;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+.task-card button:hover{
+    transform:scale(1.08);
+    box-shadow:0 0 20px #00ffcc;
+}
+
+/* Kutlama mesajı */
+.completed-message{
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    color:#00ff7f;
+    margin-top:20px;
+    display:none;
+}
+.completed-message img{
+    width:120px;
+    height:120px;
+    margin-top:10px;
+}
+
+/* Responsive */
+@media(max-width:768px){
+    .container{
+        flex-direction:column;
+    }
+    .jokers{
+        justify-content:flex-start;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="game-bar">
+    <div class="left-bar">
+        <div>⭐ Seviye 2 | Toplam Puan: 150 XP</div>
+        <div class="progress">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+
+    <div class="jokers">
+        <div class="joker" onclick="useHint()">
+            💡
+            <div class="tooltip" id="hintTooltip">💡 İpucu Al<br>Kalan Hak: 1</div>
+            <div class="joker-count" id="hintCount">1</div>
+        </div>
+
+        <div class="joker" onclick="useFriend()">
+            👥
+            <div class="tooltip" id="friendTooltip">👥 Arkadaşına Sor<br>Kalan Hak: 2</div>
+            <div class="joker-count" id="friendCount">2</div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="main-content">
+        <h1>🔌 Görev 2: Devre Kurulumu</h1>
+
+        <div class="scenario-box">
+            <img src="trafik_devre.jpg" alt="Devre Malzemeleri">
+            <div class="scenario-text">
+                Masadaki Arduino, LED, direnç ve butonları kullanarak trafik ışığı devresini kur. <br>
+                Devreni fotoğrafla veya Tinkercad linkini gir! <br>
+                Herhangi birini yaptığında görev tamamlanacak.
+            </div>
+        </div>
+
+        <div class="task-card">
+            <h3>Devreyi Kur ve Gönder</h3>
+            <p>Dosya veya link yükle. Eğer devrede sorun fark edersen, tekrar yükleyip düzeltebilirsin!</p>
+            <input type="file" id="devreUpload" accept="image/*,.zip,.ino"><br>
+            <input type="url" id="tinkercadLink" placeholder="Tinkercad linkini buraya yapıştır"><br>
+            <button onclick="completeTask()">Görevi Tamamla</button>
+
+            <div class="completed-message" id="completedMessage">
+                🎉 Devreyi başarıyla yükledin!<br>
+                <strong>Hadi şimdi kodunu yazmaya geçelim!</strong><br>
+                <img src="kutlama.jpg" alt="Tebrikler!"><br>
+                <small style="color:#fff;">⚠️ Eğer devrede bir sorun görürsen, tekrar yükleyebilirsin!</small><br>
+                <div style="margin-top:15px;">
+                    <button onclick="goHome()" style="margin-right:10px;">🏠 Ana Sayfaya Dön</button>
+                    <button onclick="goGorev3()">➡ Görev 3’e Başla</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let hintRight = 1;
+let friendRight = 2;
+
+function completeTask(){
+    const file = document.getElementById('devreUpload').files[0];
+    const link = document.getElementById('tinkercadLink').value.trim();
+    if(!file && link===''){
+        alert("Lütfen devre fotoğrafını yükleyin veya Tinkercad linkini girin!");
+        return;
+    }
+    document.getElementById('completedMessage').style.display='block';
+}
+
+function goHome(){
+    window.location.href='index.html';
+}
+
+function goGorev3(){
+    window.location.href='gorev3.html';
+}
+
+function useHint(){
+    if(hintRight > 0){
+        hintRight--;
+        document.getElementById("hintTooltip").innerHTML = "💡 İpucu Al<br>Kalan Hak: " + hintRight;
+        document.getElementById("hintCount").innerText = hintRight;
+        alert("İpucu kullanıldı!");
+    }else{
+        alert("İpucu hakkın bitti!");
+    }
+}
+
+function useFriend(){
+    if(friendRight > 0){
+        friendRight--;
+        document.getElementById("friendTooltip").innerHTML = "👥 Arkadaşına Sor<br>Kalan Hak: " + friendRight;
+        document.getElementById("friendCount").innerText = friendRight;
+        alert("Arkadaşına danıştın!");
+    }else{
+        alert("Arkadaşına sorma hakkın bitti!");
+    }
+}
+</script>
+
+</body>
+</html>
